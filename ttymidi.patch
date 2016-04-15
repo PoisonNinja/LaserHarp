@@ -1,0 +1,9 @@
+--- Makefile.orig	2016-04-15 17:59:33.419993615 -0500
++++ Makefile		2016-04-15 17:59:26.227993668 -0500
+@@ -1,5 +1,5 @@
+ all:
+-	gcc src/ttymidi.c -o ttymidi -lasound
++	gcc src/ttymidi.c -o ttymidi -lasound -lpthread
+ clean:
+ 	rm ttymidi
+ install:
