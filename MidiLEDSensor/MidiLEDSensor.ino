@@ -9,7 +9,7 @@ void setup() {
 
 void loop(void) {
   int pinRead0 = analogRead(LEDPORT);
-  if (pinRead0 > THRESHOLD) {
+  if (pinRead0 < THRESHOLD) {
     noteOn(0x90, NOTE, 0x45);
   } else {
     noteOn(0x90, NOTE, 0x00);
