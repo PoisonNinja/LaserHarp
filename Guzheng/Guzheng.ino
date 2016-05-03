@@ -1,12 +1,21 @@
 /* Code for laser guzheng
  * Copyright (C) 2016 Jason Lu
  * 
+ * Licensed under the MIT License
  */ 
+ 
+/* Uncomment the define if you are using a wind instrument, such
+ * as a trumpet or flute. It will disable several things that
+ * are specific to string and percussion instruments. DO NOT
+ * uncomment it if you are using a piano or string instrument! */
+// #define WIND
 
-// Some defines
+// Port I/O defines
 #define THRESHOLD 500
-#define VOLUME 0x7F
 #define LASTPORT 4
+
+// MIDI property defines
+#define VOLUME 0x7F
 #define DELAY 10
 
 // MIDI command defines
@@ -14,7 +23,10 @@
 #define NOTEOFF 0x80
 #define CHANGEINSTRUMENT 0xC0
 
+#define INSTRUMENT 0x39
+
 // Values for different notes
+// Currently a C scale, starting from middle C (C4)
 int note8 = 0x48;
 int note7 = 0x47;
 int note6 = 0x45;
@@ -24,7 +36,17 @@ int note3 = 0x40;
 int note2 = 0x3E;
 int note1 = 0x3C;
 
+// Variable to keep track of which set of notes (lower or upper 4)
+// Needed to work around limited lasers
 int noteSet = 1;
+/* Variable to keep track of the last played instrument. Used to
+ * prevent continuous striking sounds on string and piano instruments
+ * . Set to -1 when all strings have not been blocked, and 314 when
+ * the noteSet laser is pressed. Otherwise, it is set to the last
+ * playing laser, which will cause the Arduino to ignore the laser
+ * until it is released again, thus preventing multiple hits */
+// TODO: Switch to a bit flag, and support multiple strings
+int lastNote = -1;
 
 void setup()
 {
@@ -36,7 +58,7 @@ void setup()
   // 0xC0 is the change instrument command
   // 0x39 is the instrument ID in hex
   Serial.write(CHANGEINSTRUMENT);
-  Serial.write(0x68);
+  Serial.write(INSTRUMENT);
 }
 
 // Function for playing note based on ID
@@ -116,18 +138,35 @@ void loop()
   // 5 ports, from 0 to 4
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
-      // Beam has been cut
-      // i+1 is because i is 0 indexed, but the ID starts with 1
-      if (i < 4) {
-        musicOn(i + 1);
-      } else {
-        if (noteSet == 1) {
-          noteSet = 2;
+#ifndef WIND
+      if (lastNote != i || lastNote != 314) {
+#endif
+        // Beam has been cut
+        // i+1 is because i is 0 indexed, but the ID starts with 1
+        if (i < 4) {
+          musicOn(i + 1);
+#ifndef WIND
+          lastNote = i;
+#endif
         } else {
-          noteSet = 1;
+          if (noteSet == 1) {
+            noteSet = 2;
+          } else {
+            noteSet = 1;
+          }
+#ifndef WIND
+          lastNote = 314;
+#endif
         }
+#ifndef WIND
       }
+#endif
     } else {
+#ifndef WIND
+      if (lastNote == i) {
+        lastNote = -1;
+      }
+#endif
       // Hand is gone. Stop the sound
       musicOff(i + 1);
     }
