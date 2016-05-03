@@ -6,6 +6,14 @@
  
 // Some defines
 #define THRESHOLD 700
+#define VOLUME 0x7F
+#define LASTPORT 4
+#define DELAY 10
+
+// MIDI command defines
+#define NOTEON 0x90
+#define NOTEOFF 0x80
+#define CHANGEINSTRUMENT 0xC0
 
 // Values for different notes
 int note8 = 0x68;
@@ -26,7 +34,7 @@ void setup()
   // Set instrument to trumpet
   // 0xC0 is the change instrument command
   // 0x39 is the instrument ID in hex
-  Serial.write(0xC0);
+  Serial.write(CHANGEINSTRUMENT);
   Serial.write(0x39);
 }
 
@@ -34,31 +42,31 @@ void setup()
 void musicOn(int ID) {
   switch (ID) {
   case 1:
-    noteOn(0x90, note1, 0x7F);
+    noteOn(NOTEON, note1, VOLUME);
     break;
   case 2:
-    noteOn(0x90, note2, 0x7F);
+    noteOn(NOTEON, note2, VOLUME);
     break;
   case 3:
-    noteOn(0x90, note3, 0x7F);
+    noteOn(NOTEON, note3, VOLUME);
     break;
   case 4:
-    noteOn(0x90, note4, 0x7F);
+    noteOn(NOTEON, note4, VOLUME);
     break;
   case 5:
-    noteOn(0x90, note5, 0x7F);
+    noteOn(NOTEON, note5, VOLUME);
     break;
   case 6:
-    noteOn(0x90, note6, 0x7F);
+    noteOn(NOTEON, note6, VOLUME);
     break;
   case 7:
-    noteOn(0x90, note7, 0x7F);
+    noteOn(NOTEON, note7, VOLUME);
     break;
   case 8:
-    noteOn(0x90, note8, 0x7F);
+    noteOn(NOTEON, note8, VOLUME);
     break;
   default:
-    noteOn(0x80, note1, 0x00);
+    noteOn(NOTEOFF, note1, 0x00);
     break;
   }
 }
@@ -68,31 +76,31 @@ void musicOn(int ID) {
 void musicOff(int ID) {
   switch (ID) {
   case 1:
-    noteOn(0x80, note1, 0x7F);
+    noteOn(NOTEOFF, note1, 0x7F);
     break;
   case 2:
-    noteOn(0x80, note2, 0x7F);
+    noteOn(NOTEOFF, note2, 0x7F);
     break;
   case 3:
-    noteOn(0x80, note3, 0x7F);
+    noteOn(NOTEOFF, note3, 0x7F);
     break;
   case 4:
-    noteOn(0x80, note4, 0x7F);
+    noteOn(NOTEOFF, note4, 0x7F);
     break;
   case 5:
-    noteOn(0x80, note5, 0x7F);
+    noteOn(NOTEOFF, note5, 0x7F);
     break;
   case 6:
-    noteOn(0x80, note6, 0x7F);
+    noteOn(NOTEOFF, note6, 0x7F);
     break;
   case 7:
-    noteOn(0x80, note7, 0x7F);
+    noteOn(NOTEOFF, note7, 0x7F);
     break;
   case 8:
-    noteOn(0x80, note8, 0x7F);
+    noteOn(NOTEOFF, note8, 0x7F);
     break;
   default:
-    noteOn(0x80, note1, 0x00);
+    noteOn(NOTEOFF, note1, 0x00);
     break;
   }
 }
@@ -101,7 +109,7 @@ void loop()
 {
   // Main loop
   // 5 ports, from 0 to 4
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
       // Beam has been cut
       // i+1 is because i is 0 indexed, but the ID starts with 1
@@ -111,7 +119,7 @@ void loop()
       musicOff(i + 1);
     }
     // Delay 10 to prevent weird analog readings
-    delay(10);
+    delay(DELAY);
   }
 }
 
