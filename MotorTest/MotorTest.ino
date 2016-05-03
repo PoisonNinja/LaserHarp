@@ -1,3 +1,10 @@
+/* Code for motor based laser harp
+ * Copyright (C) 2016 Jason Lu
+ *
+ * Some code was taken from stepper motor sample code
+ *
+ */
+
 /*-----( Import needed libraries )-----*/
 #include <Stepper.h> 
 

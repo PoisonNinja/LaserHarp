@@ -1,3 +1,8 @@
+/* Code for Midi control using LED as sensor
+ * Copyright (C) 2016 Jason Lu
+ * 
+ */
+
 #define LEDPORT 5
 #define NOTE 0x1E
 #define DELAY 200

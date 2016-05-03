@@ -1,3 +1,8 @@
+/* Code for MIDI over serial testing
+ * Copyright (C) 2016 Jason Lu
+ * 
+ */
+
 void setup() {
   //  Set MIDI baud rate:
   Serial.begin(115200);
