@@ -22,7 +22,6 @@
 #define NOTEON 0x90
 #define NOTEOFF 0x80
 #define CHANGEINSTRUMENT 0xC0
-
 #define INSTRUMENT 0x39
 
 // Values for different notes
@@ -36,6 +35,15 @@ int note3 = 0x40;
 int note2 = 0x3E;
 int note1 = 0x3C;
 
+uint8_t laser1 = 0x01;
+uint8_t laser2 = 0x02;
+uint8_t laser3 = 0x04;
+uint8_t laser4 = 0x08;
+uint8_t laser5 = 0x10;
+uint8_t laser6 = 0x20;
+uint8_t laser7 = 0x40;
+uint8_t laser8 = 0x80;
+
 // Variable to keep track of which set of notes (lower or upper 4)
 // Needed to work around limited lasers
 int noteSet = 1;
@@ -46,7 +54,7 @@ int noteSet = 1;
  * playing laser, which will cause the Arduino to ignore the laser
  * until it is released again, thus preventing multiple hits */
 // TODO: Switch to a bit flag, and support multiple strings
-int lastNote = -1;
+uint8_t lastNote = 0;
 
 void setup()
 {
@@ -57,8 +65,10 @@ void setup()
   // Set instrument to trumpet
   // 0xC0 is the change instrument command
   // 0x39 is the instrument ID in hex
-  // Serial.write(CHANGEINSTRUMENT);
-  // Serial.write(INSTRUMENT);
+#ifdef WIND
+  Serial.write(CHANGEINSTRUMENT);
+  Serial.write(INSTRUMENT);
+#endif
 }
 
 // Function for playing note based on ID
@@ -128,6 +138,29 @@ void musicOff(int ID) {
   }
 }
 
+uint8_t inttomask(int i) {
+  switch (i) {
+    case 1:
+      return laser1;
+    case 2:
+      return laser2;
+    case 3:
+      return laser3;
+    case 4:
+      return laser4;
+    case 5:
+      return laser5;
+    case 6:
+      return laser6;
+    case 7:
+      return laser7;
+    case 8:
+      return laser8;
+    default:
+      return 0x00;
+  }
+}
+
 void loop()
 {
   // Main loop
@@ -135,36 +168,19 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
-      if (lastNote != i) {
+      if (!(lastNote & (inttomask(i)))) {
 #endif
         // Beam has been cut
         // i+1 is because i is 0 indexed, but the ID starts with 1
-        if (i < 4) {
-          musicOn(i + 1);
+        musicOn(i + 1);
 #ifndef WIND
-          lastNote = i;
-#endif
-        } else if (i == 4) {
-#ifndef WIND
-          if (lastNote != 314) {
-#endif
-            if (noteSet == 1) {
-              noteSet = 2;
-            } else {
-              noteSet = 1;
-            }
-#ifndef WIND
-            lastNote = 314;
-          }
-#endif
-        }
-#ifndef WIND
+        lastNote |= (inttomask(i));
       }
 #endif
     } else {
 #ifndef WIND
       if (lastNote == i) {
-        lastNote = -1;
+        lastNote &= ~(inttomask(i));
       }
 #endif
       // Hand is gone. Stop the sound
