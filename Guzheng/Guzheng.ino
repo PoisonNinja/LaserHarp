@@ -63,72 +63,68 @@ void setup()
 
 // Function for playing note based on ID
 void musicOn(int ID) {
-  if (noteSet == 1) {
-    switch (ID) {
-      case 1:
-        noteOn(NOTEON, note1, VOLUME);
-        break;
-      case 2:
-        noteOn(NOTEON, note2, VOLUME);
-        break;
-      case 3:
-        noteOn(NOTEON, note3, VOLUME);
-        break;
-      case 4:
-        noteOn(NOTEON, note4, VOLUME);
-        break;
-    }
-  } else if (noteSet == 2) {
-    switch (ID) {
-      case 1:
-        noteOn(NOTEON, note5, VOLUME);
-        break;
-      case 2:
-        noteOn(NOTEON, note6, VOLUME);
-        break;
-      case 3:
-        noteOn(NOTEON, note7, VOLUME);
-        break;
-      case 4:
-        noteOn(NOTEON, note8, VOLUME);
-        break;
-    }
+  switch (ID) {
+  case 1:
+    noteOn(NOTEON, note1, VOLUME);
+    break;
+  case 2:
+    noteOn(NOTEON, note2, VOLUME);
+    break;
+  case 3:
+    noteOn(NOTEON, note3, VOLUME);
+    break;
+  case 4:
+    noteOn(NOTEON, note4, VOLUME);
+    break;
+  case 5:
+    noteOn(NOTEON, note5, VOLUME);
+    break;
+  case 6:
+    noteOn(NOTEON, note6, VOLUME);
+    break;
+  case 7:
+    noteOn(NOTEON, note7, VOLUME);
+    break;
+  case 8:
+    noteOn(NOTEON, note8, VOLUME);
+    break;
+  default:
+    noteOn(NOTEOFF, note1, 0x00);
+    break;
   }
 }
 
 // Function for turning off a specific note based on ID
 // Just a slightly modified version of musicOn()
 void musicOff(int ID) {
-  if (noteSet == 1) {
-    switch (ID) {
-      case 1:
-        noteOn(NOTEOFF, note1, VOLUME);
-        break;
-      case 2:
-        noteOn(NOTEOFF, note2, VOLUME);
-        break;
-      case 3:
-        noteOn(NOTEOFF, note3, VOLUME);
-        break;
-      case 4:
-        noteOn(NOTEOFF, note4, VOLUME);
-        break;
-    }
-  } else if (noteSet == 2) {
-    switch (ID) {
-      case 1:
-        noteOn(NOTEOFF, note5, VOLUME);
-        break;
-      case 2:
-        noteOn(NOTEOFF, note6, VOLUME);
-        break;
-      case 3:
-        noteOn(NOTEOFF, note7, VOLUME);
-        break;
-      case 4:
-        noteOn(NOTEOFF, note8, VOLUME);
-        break;
-    }
+  switch (ID) {
+  case 1:
+    noteOn(NOTEOFF, note1, 0x7F);
+    break;
+  case 2:
+    noteOn(NOTEOFF, note2, 0x7F);
+    break;
+  case 3:
+    noteOn(NOTEOFF, note3, 0x7F);
+    break;
+  case 4:
+    noteOn(NOTEOFF, note4, 0x7F);
+    break;
+  case 5:
+    noteOn(NOTEOFF, note5, 0x7F);
+    break;
+  case 6:
+    noteOn(NOTEOFF, note6, 0x7F);
+    break;
+  case 7:
+    noteOn(NOTEOFF, note7, 0x7F);
+    break;
+  case 8:
+    noteOn(NOTEOFF, note8, 0x7F);
+    break;
+  default:
+    noteOn(NOTEOFF, note1, 0x00);
+    break;
   }
 }
 
