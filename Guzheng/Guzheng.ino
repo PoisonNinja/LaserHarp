@@ -57,8 +57,8 @@ void setup()
   // Set instrument to trumpet
   // 0xC0 is the change instrument command
   // 0x39 is the instrument ID in hex
-  Serial.write(CHANGEINSTRUMENT);
-  Serial.write(INSTRUMENT);
+  // Serial.write(CHANGEINSTRUMENT);
+  // Serial.write(INSTRUMENT);
 }
 
 // Function for playing note based on ID
@@ -139,7 +139,7 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
-      if (lastNote != i || lastNote != 314) {
+      if (lastNote != i) {
 #endif
         // Beam has been cut
         // i+1 is because i is 0 indexed, but the ID starts with 1
@@ -148,14 +148,18 @@ void loop()
 #ifndef WIND
           lastNote = i;
 #endif
-        } else {
-          if (noteSet == 1) {
-            noteSet = 2;
-          } else {
-            noteSet = 1;
-          }
+        } else if (i == 4) {
 #ifndef WIND
-          lastNote = 314;
+          if (lastNote != 314) {
+#endif
+            if (noteSet == 1) {
+              noteSet = 2;
+            } else {
+              noteSet = 1;
+            }
+#ifndef WIND
+            lastNote = 314;
+          }
 #endif
         }
 #ifndef WIND
