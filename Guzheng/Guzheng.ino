@@ -13,6 +13,7 @@
 // Port I/O defines
 #define THRESHOLD 500
 #define LASTPORT 4
+#define BUTTONPORT 2
 
 // MIDI property defines
 #define VOLUME 0x7F
@@ -35,6 +36,11 @@ int note3 = 0x40;
 int note2 = 0x3E;
 int note1 = 0x3C;
 
+/* Flag values for each laser. This may need some explanation. These
+ * values will operate on the bit levels, directly with binary. They
+ * work together with the lastNote variable to keep track of blocked
+ * lasers. Here, I use an AND operator to read if the value has been
+ * set, and OR to set the value. */
 uint8_t laser1 = 0x01;
 uint8_t laser2 = 0x02;
 uint8_t laser3 = 0x04;
@@ -168,26 +174,26 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
-      if (!(lastNote & (inttomask(i)))) {
+      if (!(lastNote & (inttomask(i+1)))) {
 #endif
         // Beam has been cut
         // i+1 is because i is 0 indexed, but the ID starts with 1
         musicOn(i + 1);
 #ifndef WIND
-        lastNote |= (inttomask(i));
+        lastNote |= (inttomask(i+1));
       }
 #endif
     } else {
 #ifndef WIND
-      if (lastNote == i) {
-        lastNote &= ~(inttomask(i));
+      if ((lastNote & (inttomask(i+1)))) {
+        lastNote &= ~(inttomask(i+1));
       }
 #endif
       // Hand is gone. Stop the sound
       musicOff(i + 1);
     }
     // Delay 10 to prevent weird analog readings
-    delay(DELAY);
+    // delay(DELAY);
   }
 }
 
