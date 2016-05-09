@@ -1,4 +1,4 @@
-/* Code for laser guzheng
+/* Code for laser GuZheng
  * Copyright (C) 2016 Jason Lu
  * 
  * Licensed under the MIT License
@@ -12,12 +12,12 @@
 
 // Port I/O defines
 #define THRESHOLD 500
-#define LASTPORT 4
+#define LASTPORT 7
 #define BUTTONPORT 2
 
 // MIDI property defines
 #define VOLUME 0x7F
-#define DELAY 10
+#define DELAY 0
 
 // MIDI command defines
 #define NOTEON 0x90
@@ -41,14 +41,7 @@ int note1 = 0x3C;
  * work together with the lastNote variable to keep track of blocked
  * lasers. Here, I use an AND operator to read if the value has been
  * set, and OR to set the value. */
-uint8_t laser1 = 0x01;
-uint8_t laser2 = 0x02;
-uint8_t laser3 = 0x04;
-uint8_t laser4 = 0x08;
-uint8_t laser5 = 0x10;
-uint8_t laser6 = 0x20;
-uint8_t laser7 = 0x40;
-uint8_t laser8 = 0x80;
+uint8_t laserArray[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
 // Variable to keep track of which set of notes (lower or upper 4)
 // Needed to work around limited lasers
@@ -144,29 +137,6 @@ void musicOff(int ID) {
   }
 }
 
-uint8_t inttomask(int i) {
-  switch (i) {
-    case 1:
-      return laser1;
-    case 2:
-      return laser2;
-    case 3:
-      return laser3;
-    case 4:
-      return laser4;
-    case 5:
-      return laser5;
-    case 6:
-      return laser6;
-    case 7:
-      return laser7;
-    case 8:
-      return laser8;
-    default:
-      return 0x00;
-  }
-}
-
 void loop()
 {
   // Main loop
@@ -174,26 +144,26 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
-      if (!(lastNote & (inttomask(i+1)))) {
+      if (!(lastNote & (laserArray[i]))) {
 #endif
         // Beam has been cut
         // i+1 is because i is 0 indexed, but the ID starts with 1
         musicOn(i + 1);
 #ifndef WIND
-        lastNote |= (inttomask(i+1));
+        lastNote |= (laserArray[i]);
       }
 #endif
     } else {
 #ifndef WIND
-      if ((lastNote & (inttomask(i+1)))) {
-        lastNote &= ~(inttomask(i+1));
+      if ((lastNote & (laserArray[i]))) {
+        lastNote &= ~(laserArray[i]);
       }
 #endif
       // Hand is gone. Stop the sound
       musicOff(i + 1);
     }
     // Delay 10 to prevent weird analog readings
-    // delay(DELAY);
+    delay(DELAY);
   }
 }
 
