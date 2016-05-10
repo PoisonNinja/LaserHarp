@@ -37,38 +37,25 @@ int note3 = 0x40;
 int note2 = 0x3E;
 int note1 = 0x3C;
 
-/* Flag values for each laser. This may need some explanation. These
- * values will operate on the bit levels, directly with binary. They
- * work together with the lastNote variable to keep track of blocked
- * lasers. Here, I use an AND operator to read if the value has been
+/* Flag values for each laser. These values will operate on the bit
+ * levels, directly with binary. They work together with the
+ * lastNote variable to keep track of blocked lasers. 
+ * Here, I use an AND operator to read if the value has been
  * set, and OR to set the value. */
 uint8_t laserArray[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
-// Variable to keep track of which set of notes (lower or upper 4)
-// Needed to work around limited lasers
-int noteSet = 1;
-/* Variable to keep track of the last played instrument. Used to
- * prevent continuous striking sounds on string and piano instruments
- * . Set to -1 when all strings have not been blocked, and 314 when
- * the noteSet laser is pressed. Otherwise, it is set to the last
- * playing laser, which will cause the Arduino to ignore the laser
- * until it is released again, thus preventing multiple hits */
-// TODO: Switch to a bit flag, and support multiple strings
+/* Variable to keep track of the last played instrument. The real
+ * data shows up when converted to binary, since we use binary
+ * operator tricks. When the first laser is hit, it is 00000001. If
+ * the second one is hit, then it is 00000010, and the third one is
+ * 00000100, and so on. */
 uint8_t lastNote = 0;
 
-void setup()
-{
-  // Initialize serial at 115200 baud
-  Serial.begin(115200);
-  // Wait 1 second for ttymidi to come up
-  delay(1000);
-  // Set instrument to trumpet
-  // 0xC0 is the change instrument command
-  // 0x39 is the instrument ID in hex
-#ifdef WIND
-  Serial.write(CHANGEINSTRUMENT);
-  Serial.write(INSTRUMENT);
-#endif
+// Function to write notes over serial
+void noteOn(int cmd, int pitch, int velocity) {
+  Serial.write(cmd);
+  Serial.write(pitch);
+  Serial.write(velocity);
 }
 
 // Function for playing note based on ID
@@ -99,6 +86,7 @@ void musicOn(int ID) {
     noteOn(NOTEON, note8, VOLUME);
     break;
   default:
+    // WTF? It shouldn't reach here, because that's an invalid ID
     noteOn(NOTEOFF, note1, 0x00);
     break;
   }
@@ -133,22 +121,37 @@ void musicOff(int ID) {
     noteOn(NOTEOFF, note8, 0x7F);
     break;
   default:
+    // WTF? It shouldn't reach here, because that's an invalid ID
     noteOn(NOTEOFF, note1, 0x00);
     break;
   }
 }
 
+void setup()
+{
+  // Initialize serial at 115200 baud
+  Serial.begin(115200);
+  // Wait 1 second for ttymidi to come up
+  delay(1000);
+  // Set instrument to trumpet
+  // 0xC0 is the change instrument command
+  // 0x39 is the instrument ID in hex
+#ifdef WIND
+  Serial.write(CHANGEINSTRUMENT);
+  Serial.write(INSTRUMENT);
+#endif
+}
+
 void loop()
 {
   // Main loop
-  // 5 ports, from 0 to 4
+  // 8 ports, from 0 to 7
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
       if (!(lastNote & (laserArray[i]))) {
 #endif
         // Beam has been cut
-        // i+1 is because i is 0 indexed, but the ID starts with 1
         musicOn(i);
 #ifndef WIND
         lastNote |= (laserArray[i]);
@@ -167,11 +170,3 @@ void loop()
     delay(DELAY);
   }
 }
-
-// Function to write notes over serial
-void noteOn(int cmd, int pitch, int velocity) {
-  Serial.write(cmd);
-  Serial.write(pitch);
-  Serial.write(velocity);
-}
-
