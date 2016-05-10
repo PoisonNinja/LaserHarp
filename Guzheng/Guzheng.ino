@@ -53,8 +53,11 @@ uint8_t lastNote = 0;
 
 // Function to write notes over serial
 void noteOn(int cmd, int pitch, int velocity) {
+  // MIDI command ID, such as 0x80 (note off) or 0x90 (note on)
   Serial.write(cmd);
+  // MIDI note pitch, such as 0x3C (C)
   Serial.write(pitch);
+  // MIDI note volume, from 0x00 (mute) to 0x7F (max)
   Serial.write(velocity);
 }
 
@@ -149,17 +152,29 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
+      /* Apply the AND operator to the lastNote indicator and the
+       * corresponding value from the laser array to check if the
+       * laser bit has been set or not
+       *
+       * If it returns a non zero value, then that means it is set.
+       * If it is a zero, then the bit has not been set yet */
       if (!(lastNote & (laserArray[i]))) {
 #endif
         // Beam has been cut
         musicOn(i);
 #ifndef WIND
+        /* Set the bit using the OR operator between lastNote and
+         * the corresponding value from the laser array */
         lastNote |= (laserArray[i]);
       }
 #endif
     } else {
 #ifndef WIND
+      /* Check if the last note bit has been set or not using the
+       * AND operator. This won't always be true because this section
+       * of the code runs even if the beam hasn't been cut yet */
       if ((lastNote & (laserArray[i]))) {
+        /* Unset the flag using the AND and invert operators */
         lastNote &= ~(laserArray[i]);
       }
 #endif
