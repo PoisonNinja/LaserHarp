@@ -7,7 +7,8 @@
 /* Uncomment the define if you are using a wind instrument, such
  * as a trumpet or flute. It will disable several things that
  * are specific to string and percussion instruments. DO NOT
- * uncomment it if you are using a piano or string instrument! */
+ * uncomment it if you are using a piano or string instrument! 
+ */
 // #define WIND
 
 // Port I/O defines
@@ -73,28 +74,28 @@ void setup()
 // Function for playing note based on ID
 void musicOn(int ID) {
   switch (ID) {
-  case 1:
+  case 0:
     noteOn(NOTEON, note1, VOLUME);
     break;
-  case 2:
+  case 1:
     noteOn(NOTEON, note2, VOLUME);
     break;
-  case 3:
+  case 2:
     noteOn(NOTEON, note3, VOLUME);
     break;
-  case 4:
+  case 3:
     noteOn(NOTEON, note4, VOLUME);
     break;
-  case 5:
+  case 4:
     noteOn(NOTEON, note5, VOLUME);
     break;
-  case 6:
+  case 5:
     noteOn(NOTEON, note6, VOLUME);
     break;
-  case 7:
+  case 6:
     noteOn(NOTEON, note7, VOLUME);
     break;
-  case 8:
+  case 7:
     noteOn(NOTEON, note8, VOLUME);
     break;
   default:
@@ -107,28 +108,28 @@ void musicOn(int ID) {
 // Just a slightly modified version of musicOn()
 void musicOff(int ID) {
   switch (ID) {
-  case 1:
+  case 0:
     noteOn(NOTEOFF, note1, 0x7F);
     break;
-  case 2:
+  case 1:
     noteOn(NOTEOFF, note2, 0x7F);
     break;
-  case 3:
+  case 2:
     noteOn(NOTEOFF, note3, 0x7F);
     break;
-  case 4:
+  case 3:
     noteOn(NOTEOFF, note4, 0x7F);
     break;
-  case 5:
+  case 4:
     noteOn(NOTEOFF, note5, 0x7F);
     break;
-  case 6:
+  case 5:
     noteOn(NOTEOFF, note6, 0x7F);
     break;
-  case 7:
+  case 6:
     noteOn(NOTEOFF, note7, 0x7F);
     break;
-  case 8:
+  case 7:
     noteOn(NOTEOFF, note8, 0x7F);
     break;
   default:
@@ -148,7 +149,7 @@ void loop()
 #endif
         // Beam has been cut
         // i+1 is because i is 0 indexed, but the ID starts with 1
-        musicOn(i + 1);
+        musicOn(i);
 #ifndef WIND
         lastNote |= (laserArray[i]);
       }
@@ -160,7 +161,7 @@ void loop()
       }
 #endif
       // Hand is gone. Stop the sound
-      musicOff(i + 1);
+      musicOff(i);
     }
     // Delay 10 to prevent weird analog readings
     delay(DELAY);
