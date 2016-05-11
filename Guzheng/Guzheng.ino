@@ -24,8 +24,8 @@
 #define NOTEON 0x90
 #define NOTEOFF 0x80
 #define CHANGEINSTRUMENT 0xC0
-#define TRUMPET 0x39
-#define PIANO 0x00
+#define STRING 0x2E
+#define PIANO 0x01
 
 // Values for different notes
 // Currently a C scale, starting from middle C (C4)
@@ -139,13 +139,6 @@ void setup()
   Serial.begin(115200);
   // Wait 1 second for ttymidi to come up
   delay(1000);
-  // Set instrument to trumpet
-  // 0xC0 is the change instrument command
-  // 0x39 is the instrument ID in hex
-#ifdef WIND
-  Serial.write(CHANGEINSTRUMENT);
-  Serial.write(INSTRUMENT);
-#endif
 }
 
 void loop()
@@ -155,8 +148,8 @@ void loop()
   for (int i = 0; i <= LASTPORT; i++) {
     if(digitalRead(BUTTONPORT) == HIGH) {
       if (buttonState == 0) {
-        Serial.write(CHANGEINTSTRUMENT);
-        Serial.write(TRUMPET);
+        Serial.write(CHANGEINSTRUMENT);
+        Serial.write(STRING);
         buttonState = 1;
       }
     } else {
