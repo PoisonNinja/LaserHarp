@@ -32,6 +32,11 @@ int note2 = 0x3E;
 int note1 = 0x3C;
 
 int buttonState = 0;
+int currentInstrument = 0;
+
+// Piano, Harpsichord, Pizzacato strings, Flute, Violin, Accordian
+// Sounds provided by MIDI synthesizer, so you may need to install it
+int instrumentArray[6] = {0x01, 0x07, 0x2E, 0x4A, 0x29, 0x16};
 
 /* Flag values for each laser. These values will operate on the bit
  * levels, directly with binary. They work together with the
@@ -140,12 +145,26 @@ void loop()
   // 8 ports, from 0 to 7
   for (int i = 0; i <= LASTPORT; i++) {
     if(digitalRead(BUTTONPORT) == HIGH) {
+      // Make sure that this is the first time that the button
+      // has been pressed
       if (buttonState == 0) {
+        // Send MIDI command to change instrument
         Serial.write(CHANGEINSTRUMENT);
-        Serial.write(STRING);
+        // Max number of instruments, so wrap around
+        if (currentInstrument >= 5) {
+          currentInstrument = 0;
+        } else {
+          // Increment current instrument
+          currentInstrument++;
+        }
+        // Write the current instrument
+        Serial.write(instrumentArray[currentInstrument];
+        // Set the button state so this won't fire when holding down
+        // the button
         buttonState = 1;
       }
     } else {
+      // Button is no longer pressed, so reset the button state.
       buttonState = 0;
     }
     if(analogRead(i) > THRESHOLD) {
