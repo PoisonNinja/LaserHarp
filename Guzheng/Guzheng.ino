@@ -3,13 +3,6 @@
  * 
  * Licensed under the MIT License
  */ 
- 
-/* Uncomment the define if you are using a wind instrument, such
- * as a trumpet or flute. It will disable several things that
- * are specific to string and percussion instruments. DO NOT
- * uncomment it if you are using a piano or string instrument! 
- */
-// #define WIND
 
 // Port I/O defines
 #define THRESHOLD 500
@@ -156,7 +149,6 @@ void loop()
       buttonState = 0;
     }
     if(analogRead(i) > THRESHOLD) {
-#ifndef WIND
       /* Apply the AND operator to the lastNote indicator and the
        * corresponding value from the laser array to check if the
        * laser bit has been set or not
@@ -164,17 +156,13 @@ void loop()
        * If it returns a non zero value, then that means it is set.
        * If it is a zero, then the bit has not been set yet */
       if (!(lastNote & (laserArray[i]))) {
-#endif
         // Beam has been cut
         musicOn(i);
-#ifndef WIND
         /* Set the bit using the OR operator between lastNote and
          * the corresponding value from the laser array */
         lastNote |= (laserArray[i]);
       }
-#endif
     } else {
-#ifndef WIND
       /* Check if the last note bit has been set or not using the
        * AND operator. This won't always be true because this section
        * of the code runs even if the beam hasn't been cut yet */
@@ -182,7 +170,6 @@ void loop()
         /* Unset the flag using the AND and invert operators */
         lastNote &= ~(laserArray[i]);
       }
-#endif
       // Hand is gone. Stop the sound
       musicOff(i);
     }
