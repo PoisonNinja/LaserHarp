@@ -13,30 +13,31 @@
 #define VOLUME 0x7F
 #define DELAY 0
 
+// MIDI Instrument Array
+#define NUMINSTRUMENTS 6
+
 // MIDI command defines
 #define NOTEON 0x90
 #define NOTEOFF 0x80
 #define CHANGEINSTRUMENT 0xC0
-#define STRING 0x2E
-#define PIANO 0x01
 
 // Values for different notes
 // Currently a C scale, starting from middle C (C4)
-int note8 = 0x48;
-int note7 = 0x47;
-int note6 = 0x45;
-int note5 = 0x43;
-int note4 = 0x41;
-int note3 = 0x40;
-int note2 = 0x3E;
-int note1 = 0x3C;
+#define note8 0x48
+#define note7 0x47
+#define note6 0x45
+#define note5 0x43
+#define note4 0x41
+#define note3 0x40
+#define note2 0x3E
+#define note1 0x3C
 
 int buttonState = 0;
 int currentInstrument = 0;
 
 // Piano, Harpsichord, Pizzacato strings, Flute, Violin, Accordian
 // Sounds provided by MIDI synthesizer, so you may need to install it
-int instrumentArray[6] = {0x01, 0x07, 0x2E, 0x4A, 0x29, 0x16};
+int instrumentArray[NUMINSTRUMENTS] = {0x01, 0x07, 0x2E, 0x4A, 0x29, 0x16};
 
 /* Flag values for each laser. These values will operate on the bit
  * levels, directly with binary. They work together with the
@@ -151,14 +152,14 @@ void loop()
         // Send MIDI command to change instrument
         Serial.write(CHANGEINSTRUMENT);
         // Max number of instruments, so wrap around
-        if (currentInstrument >= 5) {
+        if (currentInstrument >= (NUMINSTRUMENTS - 1)) {
           currentInstrument = 0;
         } else {
           // Increment current instrument
           currentInstrument++;
         }
         // Write the current instrument
-        Serial.write(instrumentArray[currentInstrument];
+        Serial.write(instrumentArray[currentInstrument]);
         // Set the button state so this won't fire when holding down
         // the button
         buttonState = 1;
