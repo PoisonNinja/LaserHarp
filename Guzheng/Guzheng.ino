@@ -24,7 +24,8 @@
 #define NOTEON 0x90
 #define NOTEOFF 0x80
 #define CHANGEINSTRUMENT 0xC0
-#define INSTRUMENT 0x39
+#define TRUMPET 0x39
+#define PIANO 0x00
 
 // Values for different notes
 // Currently a C scale, starting from middle C (C4)
@@ -36,6 +37,8 @@ int note4 = 0x41;
 int note3 = 0x40;
 int note2 = 0x3E;
 int note1 = 0x3C;
+
+int buttonState = 0;
 
 /* Flag values for each laser. These values will operate on the bit
  * levels, directly with binary. They work together with the
@@ -150,6 +153,15 @@ void loop()
   // Main loop
   // 8 ports, from 0 to 7
   for (int i = 0; i <= LASTPORT; i++) {
+    if(digitalRead(BUTTONPORT) == HIGH) {
+      if (buttonState == 0) {
+        Serial.write(CHANGEINTSTRUMENT);
+        Serial.write(TRUMPET);
+        buttonState = 1;
+      }
+    } else {
+      buttonState = 0;
+    }
     if(analogRead(i) > THRESHOLD) {
 #ifndef WIND
       /* Apply the AND operator to the lastNote indicator and the
