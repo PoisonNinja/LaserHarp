@@ -236,10 +236,10 @@ void loop()
     digitalWrite(2, r0);
     digitalWrite(3, r1);
     digitalWrite(4, r2);
-    if(digitalRead(BUTTONPORT) == HIGH) {
+    if(digitalRead(INSTRUMENTBUTTON) == HIGH) {
       // Make sure that this is the first time that the button
       // has been pressed
-      if (button1State == 0) {
+      if (instrumentButtonState == 0) {
         // Send MIDI command to change instrument
         Serial.write(CHANGEINSTRUMENT);
         // Max number of instruments, so wrap around
@@ -253,26 +253,26 @@ void loop()
         Serial.write(instrumentArray[currentInstrument]);
         // Set the button state so this won't fire when holding down
         // the button
-        button1State = 1;
+        instrumentButtonState = 1;
       }
     } else {
       // Button is no longer pressed, so reset the button state.
-      button1State = 0;
+      instrumentButtonState = 0;
     }
     if(digitalRead(9) == HIGH) {
       // Make sure that this is the first time that the button
       // has been pressed
-      if (button2State == 0) {
+      if (noteButtonState == 0) {
         if (noteSet == 1) {
           noteSet = 2;
         } else {
           noteSet = 1;
         }
-        button2State = 1;
+        noteButtonState = 1;
       }
     } else {
       // Button is no longer pressed, so reset the button state.
-      button2State = 0;
+      noteButtonState = 0;
     }
     if(analogRead(0) > THRESHOLD) {
       /* Apply the AND operator to the lastNote indicator and the
