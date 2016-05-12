@@ -5,9 +5,9 @@
  */ 
 
 // Port I/O defines
-#define THRESHOLD 500
+#define THRESHOLD 700
 #define LASTPORT 7
-#define BUTTONPORT 2
+#define BUTTONPORT 8
 
 // MIDI property defines
 #define VOLUME 0x7F
@@ -31,6 +31,10 @@
 #define note3 0x40
 #define note2 0x3E
 #define note1 0x3C
+
+int r0 = 0;      //value of select pin at the 4051 (s0)
+int r1 = 0;      //value of select pin at the 4051 (s1)
+int r2 = 0;      //value of select pin at the 4051 (s2)
 
 int buttonState = 0;
 int currentInstrument = 0;
@@ -136,6 +140,9 @@ void setup()
 {
   // Initialize serial at 115200 baud
   Serial.begin(115200);
+  pinMode(2,OUTPUT);
+  pinMode(3,OUTPUT);
+  pinMode(4,OUTPUT);
   // Wait 1 second for ttymidi to come up
   delay(1000);
 }
@@ -143,8 +150,14 @@ void setup()
 void loop()
 {
   // Main loop
-  // 8 ports, from 0 to 7
+  // LASTPORT+1 ports, from 0 to LASTPORT
   for (int i = 0; i <= LASTPORT; i++) {
+    r0 = bitRead(i,0);    // use this with arduino 0013 (and newer versions)     
+    r1 = bitRead(i,1);    // use this with arduino 0013 (and newer versions)     
+    r2 = bitRead(i,2);    // use this with arduino 0013 (and newer versions) 
+    digitalWrite(2, r0);
+    digitalWrite(3, r1);
+    digitalWrite(4, r2);
     if(digitalRead(BUTTONPORT) == HIGH) {
       // Make sure that this is the first time that the button
       // has been pressed
@@ -168,7 +181,7 @@ void loop()
       // Button is no longer pressed, so reset the button state.
       buttonState = 0;
     }
-    if(analogRead(i) > THRESHOLD) {
+    if(analogRead(0) > THRESHOLD) {
       /* Apply the AND operator to the lastNote indicator and the
        * corresponding value from the laser array to check if the
        * laser bit has been set or not
