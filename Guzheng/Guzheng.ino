@@ -7,7 +7,7 @@
 // Port I/O defines
 #define THRESHOLD 700
 #define LASTPORT 7
-#define BUTTONPORT 8
+#define INSTRUMENTBUTTON 8
 
 // MIDI property defines
 #define VOLUME 0x7F
@@ -32,11 +32,23 @@
 #define note2 0x3E
 #define note1 0x3C
 
-int r0 = 0;      //value of select pin at the 4051 (s0)
-int r1 = 0;      //value of select pin at the 4051 (s1)
-int r2 = 0;      //value of select pin at the 4051 (s2)
+#define note9 0x48
+#define note10 0x4A
+#define note11 0x4C
+#define note12 0x4D
+#define note13 0x4F
+#define note14 0x51
+#define note15 0x53
+#define note16 0x54
 
-int buttonState = 0;
+int r0 = 0;
+int r1 = 0;
+int r2 = 0;
+
+int noteSet = 1;
+
+int instrumentButtonState = 0;
+int noteButtonState = 0;
 int currentInstrument = 0;
 
 // Piano, Harpsichord, Pizzacato strings, Flute, Violin, Accordian
@@ -69,70 +81,136 @@ void noteOn(int cmd, int pitch, int velocity) {
 
 // Function for playing note based on ID
 void musicOn(int ID) {
-  switch (ID) {
-  case 0:
-    noteOn(NOTEON, note1, VOLUME);
-    break;
-  case 1:
-    noteOn(NOTEON, note2, VOLUME);
-    break;
-  case 2:
-    noteOn(NOTEON, note3, VOLUME);
-    break;
-  case 3:
-    noteOn(NOTEON, note4, VOLUME);
-    break;
-  case 4:
-    noteOn(NOTEON, note5, VOLUME);
-    break;
-  case 5:
-    noteOn(NOTEON, note6, VOLUME);
-    break;
-  case 6:
-    noteOn(NOTEON, note7, VOLUME);
-    break;
-  case 7:
-    noteOn(NOTEON, note8, VOLUME);
-    break;
-  default:
-    // WTF? It shouldn't reach here, because that's an invalid ID
-    noteOn(NOTEOFF, note1, 0x00);
-    break;
+  if (noteSet == 1) {
+    switch (ID) {
+    case 0:
+      noteOn(NOTEON, note1, VOLUME);
+      break;
+    case 1:
+      noteOn(NOTEON, note2, VOLUME);
+      break;
+    case 2:
+      noteOn(NOTEON, note3, VOLUME);
+      break;
+    case 3:
+      noteOn(NOTEON, note4, VOLUME);
+      break;
+    case 4:
+      noteOn(NOTEON, note5, VOLUME);
+      break;
+    case 5:
+      noteOn(NOTEON, note6, VOLUME);
+      break;
+    case 6:
+      noteOn(NOTEON, note7, VOLUME);
+      break;
+    case 7:
+      noteOn(NOTEON, note8, VOLUME);
+      break;
+    default:
+      // WTF? It shouldn't reach here, because that's an invalid ID
+      noteOn(NOTEOFF, note1, 0x00);
+      break;
+    }
+  } else if (noteSet == 2) {
+    switch (ID) {
+    case 0:
+      noteOn(NOTEON, note9, VOLUME);
+      break;
+    case 1:
+      noteOn(NOTEON, note10, VOLUME);
+      break;
+    case 2:
+      noteOn(NOTEON, note11, VOLUME);
+      break;
+    case 3:
+      noteOn(NOTEON, note12, VOLUME);
+      break;
+    case 4:
+      noteOn(NOTEON, note13, VOLUME);
+      break;
+    case 5:
+      noteOn(NOTEON, note14, VOLUME);
+      break;
+    case 6:
+      noteOn(NOTEON, note15, VOLUME);
+      break;
+    case 7:
+      noteOn(NOTEON, note16, VOLUME);
+      break;
+    default:
+      // WTF? It shouldn't reach here, because that's an invalid ID
+      noteOn(NOTEOFF, note1, 0x00);
+      break;
+    }
   }
 }
-
-// Function for turning off a specific note based on ID
-// Just a slightly modified version of musicOn()
+  
+  // Function for turning off a specific note based on ID
+  // Just a slightly modified version of musicOn()
 void musicOff(int ID) {
-  switch (ID) {
-  case 0:
-    noteOn(NOTEOFF, note1, 0x7F);
-    break;
-  case 1:
-    noteOn(NOTEOFF, note2, 0x7F);
-    break;
-  case 2:
-    noteOn(NOTEOFF, note3, 0x7F);
-    break;
-  case 3:
-    noteOn(NOTEOFF, note4, 0x7F);
-    break;
-  case 4:
-    noteOn(NOTEOFF, note5, 0x7F);
-    break;
-  case 5:
-    noteOn(NOTEOFF, note6, 0x7F);
-    break;
-  case 6:
-    noteOn(NOTEOFF, note7, 0x7F);
-    break;
-  case 7:
-    noteOn(NOTEOFF, note8, 0x7F);
-    break;
-  default:
-    // WTF? It shouldn't reach here, because that's an invalid ID
-    noteOn(NOTEOFF, note1, 0x00);
-    break;
+  if (noteSet == 1) {
+    switch (ID) {
+    case 0:
+      noteOn(NOTEOFF, note1, 0x7F);
+      break;
+    case 1:
+      noteOn(NOTEOFF, note2, 0x7F);
+      break;
+    case 2:
+      noteOn(NOTEOFF, note3, 0x7F);
+      break;
+    case 3:
+      noteOn(NOTEOFF, note4, 0x7F);
+      break;
+    case 4:
+      noteOn(NOTEOFF, note5, 0x7F);
+      break;
+    case 5:
+      noteOn(NOTEOFF, note6, 0x7F);
+      break;
+    case 6:
+      noteOn(NOTEOFF, note7, 0x7F);
+      break;
+    case 7:
+      noteOn(NOTEOFF, note8, 0x7F);
+      break;
+    default:
+      // WTF? It shouldn't reach here, because that's an invalid ID
+      noteOn(NOTEOFF, note1, 0x00);
+      break;
+    }
+  } else if (noteSet == 2) {
+    switch (ID) {
+    case 0:
+      noteOn(NOTEOFF, note9, VOLUME);
+      break;
+    case 1:
+      noteOn(NOTEOFF, note10, VOLUME);
+      break;
+    case 2:
+      noteOn(NOTEOFF, note11, VOLUME);
+      break;
+    case 3:
+      noteOn(NOTEOFF, note12, VOLUME);
+      break;
+    case 4:
+      noteOn(NOTEOFF, note13, VOLUME);
+      break;
+    case 5:
+      noteOn(NOTEOFF, note14, VOLUME);
+      break;
+    case 6:
+      noteOn(NOTEOFF, note15, VOLUME);
+      break;
+    case 7:
+      noteOn(NOTEOFF, note16, VOLUME);
+      break;
+    default:
+      // WTF? It shouldn't reach here, because that's an invalid ID
+      noteOn(NOTEOFF, note1, 0x00);
+      break;
+    }
   }
 }
 
@@ -161,7 +239,7 @@ void loop()
     if(digitalRead(BUTTONPORT) == HIGH) {
       // Make sure that this is the first time that the button
       // has been pressed
-      if (buttonState == 0) {
+      if (button1State == 0) {
         // Send MIDI command to change instrument
         Serial.write(CHANGEINSTRUMENT);
         // Max number of instruments, so wrap around
@@ -175,11 +253,26 @@ void loop()
         Serial.write(instrumentArray[currentInstrument]);
         // Set the button state so this won't fire when holding down
         // the button
-        buttonState = 1;
+        button1State = 1;
       }
     } else {
       // Button is no longer pressed, so reset the button state.
-      buttonState = 0;
+      button1State = 0;
+    }
+    if(digitalRead(9) == HIGH) {
+      // Make sure that this is the first time that the button
+      // has been pressed
+      if (button2State == 0) {
+        if (noteSet == 1) {
+          noteSet = 2;
+        } else {
+          noteSet = 1;
+        }
+        button2State = 1;
+      }
+    } else {
+      // Button is no longer pressed, so reset the button state.
+      button2State = 0;
     }
     if(analogRead(0) > THRESHOLD) {
       /* Apply the AND operator to the lastNote indicator and the
