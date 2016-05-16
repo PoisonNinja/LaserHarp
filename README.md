@@ -19,3 +19,8 @@ Wire a LED into the Arduino as follows:
 Flash the code, and run `./connect.sh`. Make sure you are in a bright room, and cover the LED. You should hear a note playing. Remove your hand to stop the notes.
 
 If you want to use a different analog port, change the LEDPORT define. To change the note, change the NOTE define. To change the delay, change the DELAY define. To change the sensitivity of the LED, change the THRESHOLD define.
+
+# Guzheng
+The code for our final project. Wiring is complicated, so you will have to ask me for the wiring diagram.
+
+Flash the code, and run `./connect.sh`.
