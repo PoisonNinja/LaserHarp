@@ -1,13 +1,16 @@
-/* Code for laser GuZheng
+/* Code for laser guzheng
  * Copyright (C) 2016 Jason Lu
  * 
  * Licensed under the MIT License
+ * This code has NO WARRANTY! You are
+ * responsible for anything that happens
  */ 
 
 // Port I/O defines
 #define THRESHOLD 700
 #define LASTPORT 7
 #define INSTRUMENTBUTTON 8
+#define NOTEBUTTON 9
 
 // MIDI property defines
 #define VOLUME 0x7F
@@ -218,10 +221,12 @@ void setup()
 {
   // Initialize serial at 115200 baud
   Serial.begin(115200);
+  // Set the 74HC4051 command ports
   pinMode(2,OUTPUT);
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
   // Wait 1 second for ttymidi to come up
+  // Could be unnecessary, but better safe than sorry
   delay(1000);
 }
 
@@ -230,25 +235,33 @@ void loop()
   // Main loop
   // LASTPORT+1 ports, from 0 to LASTPORT
   for (int i = 0; i <= LASTPORT; i++) {
-    r0 = bitRead(i,0);    // use this with arduino 0013 (and newer versions)     
-    r1 = bitRead(i,1);    // use this with arduino 0013 (and newer versions)     
-    r2 = bitRead(i,2);    // use this with arduino 0013 (and newer versions) 
+    /* The following three lines convert the port we want
+     * into the correct bit selections for the 74HC4051. I'm
+     * not really sure exactly how it works, but I'm pretty
+     * sure it's some bit shifting
+     */
+    r0 = bitRead(i,0);
+    r1 = bitRead(i,1);
+    r2 = bitRead(i,2);
+    // Select the correct input using the values we calculated above
     digitalWrite(2, r0);
     digitalWrite(3, r1);
     digitalWrite(4, r2);
+    // Detect if the instrument selection button is pressed
     if(digitalRead(INSTRUMENTBUTTON) == HIGH) {
-      // Make sure that this is the first time that the button
-      // has been pressed
+      /* Make sure that this is the first time that the button
+       * has been pressed
+       */
       if (instrumentButtonState == 0) {
-        // Send MIDI command to change instrument
-        Serial.write(CHANGEINSTRUMENT);
-        // Max number of instruments, so wrap around
         if (currentInstrument >= (NUMINSTRUMENTS - 1)) {
+          // Max number of instruments, so wrap around to 0
           currentInstrument = 0;
         } else {
-          // Increment current instrument
+          // Select next instrument
           currentInstrument++;
         }
+        // Send MIDI command to change instrument
+        Serial.write(CHANGEINSTRUMENT);
         // Write the current instrument
         Serial.write(instrumentArray[currentInstrument]);
         // Set the button state so this won't fire when holding down
@@ -259,10 +272,13 @@ void loop()
       // Button is no longer pressed, so reset the button state.
       instrumentButtonState = 0;
     }
-    if(digitalRead(9) == HIGH) {
+    // Detect if note button has been pressed
+    if(digitalRead(NOTEBUTTON) == HIGH) {
       // Make sure that this is the first time that the button
       // has been pressed
       if (noteButtonState == 0) {
+        // Swap the current note set
+        // TODO: FIgure out a better way to do this
         if (noteSet == 1) {
           noteSet = 2;
         } else {
