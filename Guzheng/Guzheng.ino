@@ -278,7 +278,7 @@ void loop()
       // has been pressed
       if (noteButtonState == 0) {
         // Swap the current note set
-        // TODO: FIgure out a better way to do this
+        // TODO: Figure out a better way to do this
         if (noteSet == 1) {
           noteSet = 2;
         } else {
