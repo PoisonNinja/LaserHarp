@@ -1,10 +1,10 @@
 /* Code for laser guzheng
  * Copyright (C) 2016 Jason Lu
- * 
+ *
  * Licensed under the MIT License
  * This code has NO WARRANTY! You are
  * responsible for anything that happens
- */ 
+ */
 
 // Port I/O defines
 #define THRESHOLD 700
@@ -14,7 +14,15 @@
 
 // MIDI property defines
 #define VOLUME 0x7F
-#define DELAY 0
+
+/* Comment out the below to enable a slight delay between reading
+ * each note. This may be necessary because sometimes rapidly reading
+ * analog values can cause strange values. Comment out the below if
+ * you notice anything strange, because this is probably the culprit */
+#define NODELAY
+#ifndef NODELAY
+#define DELAY 10
+#endif
 
 // MIDI Instrument Array
 #define NUMINSTRUMENTS 6
@@ -315,7 +323,9 @@ void loop()
       // Hand is gone. Stop the sound
       musicOff(i);
     }
+    #ifndef NODELAY
     // Delay 10 to prevent weird analog readings
     delay(DELAY);
+    #endif
   }
 }
