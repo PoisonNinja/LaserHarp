@@ -10,5 +10,4 @@
 #define VOLUME 0x7F
 
 #define NOTEON 0x90
-
-unsigned int notes[8] = {note1, note2, note3, note4, note5, note6, note7, note8};
+#define NOTEOFF 0x80

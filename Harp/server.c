@@ -16,6 +16,9 @@
 RtMidiOut *midiout;
 std::vector<unsigned char> message;
 
+uint8_t laserArray[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
+uint8_t lastNote = 0;
+
 bool chooseMidiPort( RtMidiOut *rtmidi )
 {
   std::cout << "\nWould you like to open a virtual output port? [y/N] ";
@@ -150,6 +153,35 @@ int noteOn(int ID) {
     }
 }
 
+int noteOff(int ID) {
+    switch (ID) {
+    case 0:
+      midiCommand(NOTEOFF, note1, VOLUME);
+      break;
+    case 1:
+      midiCommand(NOTEOFF, note2, VOLUME);
+      break;
+    case 2:
+      midiCommand(NOTEOFF, note3, VOLUME);
+      break;
+    case 3:
+      midiCommand(NOTEOFF, note4, VOLUME);
+      break;
+    case 4:
+      midiCommand(NOTEOFF, note5, VOLUME);
+      break;
+    case 5:
+      midiCommand(NOTEOFF, note6, VOLUME);
+      break;
+    case 6:
+      midiCommand(NOTEOFF, note7, VOLUME);
+      break;
+    case 7:
+      midiCommand(NOTEOFF, note8, VOLUME);
+      break;
+    }
+}
+
 int main(int argc, char ** argv) {
     midiout = new RtMidiOut();
     char * serialport = "/dev/ttyACM0";
@@ -163,7 +195,7 @@ int main(int argc, char ** argv) {
     chooseMidiPort(midiout);
     message.push_back(0);
     message.push_back(0);
-    message.push_back(0); 
+    message.push_back(0);
    char * pch;
     int id;
     int value;
@@ -185,8 +217,22 @@ int main(int argc, char ** argv) {
             pch = strtok(NULL,",");
             value = atoi(pch);
             if (value > 700) {
-                printf("Lights on for %d\n", id);
-                noteOn(id);
+                if (!(lastNote & (laserArray[i]))) {
+                    // Beam has been cut
+                    printf("Lights on for %d\n", id);
+                    noteOn(id);
+                    /* Set the bit using the OR operator between lastNote and
+                    * the corresponding value from the laser array */
+                    lastNote |= (laserArray[i]);
+                } else {
+                    printf("Rejecting repeat note for %d\n", id);
+                }
+            } else {
+                if ((lastNote & (laserArray[i]))) {
+                  /* Unset the flag using the AND and invert operators */
+                  lastNote &= ~(laserArray[i]);
+                }
+                noteOff(id);
             }
         }
     }
