@@ -20,6 +20,7 @@
  * analog values can cause strange values. Comment out the below if
  * you notice anything strange, because this is probably the culprit */
 #define NODELAY
+
 #ifndef NODELAY
 #define DELAY 10
 #endif
@@ -34,23 +35,24 @@
 
 // Values for different notes
 // Currently a C scale, starting from middle C (C4)
-#define note8 0x48
-#define note7 0x47
-#define note6 0x45
-#define note5 0x43
-#define note4 0x41
-#define note3 0x40
-#define note2 0x3E
 #define note1 0x3C
+#define note2 0x3E
+#define note3 0x40
+#define note4 0x41
+#define note5 0x43
+#define note6 0x45
+#define note7 0x47
+#define note8 0x48
 
-#define note9 0x48
-#define note10 0x4A
-#define note11 0x4C
-#define note12 0x4D
-#define note13 0x4F
-#define note14 0x51
-#define note15 0x53
-#define note16 0x54
+// A minor scale
+#define note9 0x39
+#define note10 0x3B
+#define note11 0x3C
+#define note12 0x3E
+#define note13 0x40
+#define note14 0x41
+#define note15 0x43
+#define note16 0x45
 
 int r0 = 0;
 int r1 = 0;
