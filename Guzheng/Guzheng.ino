@@ -64,6 +64,8 @@ int instrumentButtonState = 0;
 int noteButtonState = 0;
 int currentInstrument = 0;
 
+bool start = false;
+
 // Piano, Harpsichord, Pizzacato strings, Flute, Violin, Accordian
 // Sounds provided by MIDI synthesizer, so you may need to install it
 int instrumentArray[NUMINSTRUMENTS] = {0x01, 0x07, 0x2E, 0x4A, 0x29, 0x16};
@@ -235,9 +237,18 @@ void setup()
   pinMode(2,OUTPUT);
   pinMode(3,OUTPUT);
   pinMode(4,OUTPUT);
-  // Wait 1 second for ttymidi to come up
-  // Could be unnecessary, but better safe than sorry
-  delay(1000);
+  // Wait for a button press to start the loop, because
+  // delaying can either be too short or too long, and
+  // Hairless-MIDI (Windows) can't properly handle malformed
+  // MIDI commands. 
+  while (!start) {
+    if (digitalRead(INSTRUMENTBUTTON) == HIGH) {
+      start = true;
+      break;
+    } else {
+      delay(100);
+    }
+  }
 }
 
 void loop()
