@@ -58,7 +58,7 @@ int r0 = 0;
 int r1 = 0;
 int r2 = 0;
 
-int noteSet = 1;
+int noteSet = 0;
 
 int instrumentButtonState = 0;
 int noteButtonState = 0;
@@ -94,7 +94,7 @@ void noteOn(int cmd, int pitch, int velocity) {
 
 // Function for playing note based on ID
 void musicOn(int ID) {
-  if (noteSet == 1) {
+  if (noteSet == 0) {
     switch (ID) {
     case 0:
       noteOn(NOTEON, note1, VOLUME);
@@ -125,7 +125,7 @@ void musicOn(int ID) {
       noteOn(NOTEOFF, note1, 0x00);
       break;
     }
-  } else if (noteSet == 2) {
+  } else if (noteSet == 1) {
     switch (ID) {
     case 0:
       noteOn(NOTEON, note9, VOLUME);
@@ -162,7 +162,7 @@ void musicOn(int ID) {
   // Function for turning off a specific note based on ID
   // Just a slightly modified version of musicOn()
 void musicOff(int ID) {
-  if (noteSet == 1) {
+  if (noteSet == 0) {
     switch (ID) {
     case 0:
       noteOn(NOTEOFF, note1, 0x7F);
@@ -193,7 +193,7 @@ void musicOff(int ID) {
       noteOn(NOTEOFF, note1, 0x00);
       break;
     }
-  } else if (noteSet == 2) {
+  } else if (noteSet == 1) {
     switch (ID) {
     case 0:
       noteOn(NOTEOFF, note9, VOLUME);
@@ -289,11 +289,7 @@ void loop()
       if (noteButtonState == 0) {
         // Swap the current note set
         // TODO: Figure out a better way to do this
-        if (noteSet == 1) {
-          noteSet = 2;
-        } else {
-          noteSet = 1;
-        }
+        noteSet = !noteSet;
         noteButtonState = 1;
       }
     } else {
