@@ -40,3 +40,8 @@ The code for our final project. The harp looks like the Chinese Guzheng, and was
 A basic wiring diagram is available in the Guzheng folder, but it is incomplete, and you will have to figure out the rest of it.
 
 Expected output is that it should play a note corresponding to the beam being cut.
+
+# Harp
+An experimental rewrite of the Guzheng code, except with a client-server architecture. This offloads most of the work to the computer and makes the Arduino a sensor hub, hopefully improving performance. It doesn't really work right now because it has a weird tendency to skip notes or hold on to notes too long.
+
+Wiring diagrams and expected output are the same as the Guzheng.
