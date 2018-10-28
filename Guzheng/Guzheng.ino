@@ -12,6 +12,9 @@
 #define INSTRUMENTBUTTON 8
 #define NOTEBUTTON 9
 
+// This works around the faulty fourth sensor
+#define SENSOR_FIX
+
 // MIDI property defines
 #define VOLUME 0x7F
 
@@ -307,7 +310,12 @@ void loop()
       // Button is no longer pressed, so reset the button state.
       noteButtonState = 0;
     }
+#ifdef SENSOR_FIX
+    int threshold = (i == 3) ? 950 : THRESHOLD;
+    if(analogRead(0) > threshold) {
+#else
     if(analogRead(0) > THRESHOLD) {
+#endif
       /* Apply the AND operator to the lastNote indicator and the
        * corresponding value from the laser array to check if the
        * laser bit has been set or not
